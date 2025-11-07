@@ -56,7 +56,7 @@ export default function LoginPage() {
               value={loginInput}
               onChange={(e) => setLoginInput(e.target.value)}
               placeholder="Email atau Username"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
+              className="text-gray-900 w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition"
               disabled={isLoading}
             />
           </div>

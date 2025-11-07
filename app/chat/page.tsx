@@ -581,7 +581,7 @@ export default function ChatPage() {
               <input
                 type="text"
                 placeholder="Cari chat..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="text-gray-800 w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -748,7 +748,7 @@ export default function ChatPage() {
                   onKeyPress={handleKeyPress}
                   placeholder={isUploading ? "Mengunggah file..." : "Ketik pesan..."}
                   disabled={isUploading}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="text-gray-800 flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
                 <button
                   onClick={handleSendMessage}
