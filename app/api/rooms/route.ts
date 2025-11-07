@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
         r.id,
         r.name,
         r.image_url,
+        r.room_type,
         (
           SELECT json_agg(
             json_build_object(
@@ -47,6 +48,7 @@ export async function GET(request: NextRequest) {
       FROM rooms r
       JOIN room_participants rp ON r.id = rp.room_id
       WHERE rp.user_id = ${userId}
+      GROUP BY r.id, r.name, r.image_url, r.room_type
       ORDER BY last_message_time DESC NULLS LAST
     `;
 
