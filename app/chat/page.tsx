@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Send, LogOut, Users, Search, Menu, X, Paperclip, FileText, Download, Image as ImageIcon, Video, File, Plus, UserPlus, MessageSquarePlus } from 'lucide-react';
+import PusherClient from 'pusher-js';
 
 interface User {
   id: string;
@@ -147,6 +148,31 @@ export default function ChatPage() {
       setMessages([]);
     }
   };
+
+  // Polling: Auto-refresh messages every 3 seconds
+  useEffect(() => {
+    if (!selectedRoom || !currentUser) return;
+
+    const pollMessages = async () => {
+      try {
+        const res = await fetch(`/api/messages/${selectedRoom.id}`, {
+          headers: { 'x-user-id': currentUser.id }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setMessages(data.messages || []);
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    };
+
+    // Poll every 3 seconds
+    const interval = setInterval(pollMessages, 3000);
+
+    return () => clearInterval(interval);
+  }, [selectedRoom, currentUser]);
 
   // Send message
   const handleSendMessage = async () => {
@@ -581,7 +607,7 @@ export default function ChatPage() {
               <input
                 type="text"
                 placeholder="Cari chat..."
-                className="text-gray-800 w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -650,26 +676,22 @@ export default function ChatPage() {
                 />
                 <div>
                   <h2 className="font-semibold text-gray-800">{selectedRoom.name}</h2>
-                  {selectedRoom.room_type !== "direct" && (
-                    <p className="text-xs text-gray-500">
-                      {selectedRoom.participants?.length || 0} participants
-                    </p>
-                  )}
+                  <p className="text-xs text-gray-500">
+                    {selectedRoom.participants?.length || 0} participants
+                  </p>
                 </div>
               </div>
-              {selectedRoom.room_type !== "direct" && (
-                <div className="flex space-x-2">
-                  {selectedRoom.participants?.map((participant) => (
-                    <div
-                      key={participant.id}
-                      className={`w-8 h-8 ${getRoleColor(participant.role)} rounded-full flex items-center justify-center text-white text-xs font-bold`}
-                      title={`${participant.name} - ${getRoleName(participant.role)}`}
-                    >
-                      {participant.name.charAt(0).toUpperCase()}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex space-x-2">
+                {selectedRoom.participants?.map((participant) => (
+                  <div
+                    key={participant.id}
+                    className={`w-8 h-8 ${getRoleColor(participant.role)} rounded-full flex items-center justify-center text-white text-xs font-bold`}
+                    title={`${participant.name} - ${getRoleName(participant.role)}`}
+                  >
+                    {participant.name.charAt(0).toUpperCase()}
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Messages Area */}
@@ -748,7 +770,7 @@ export default function ChatPage() {
                   onKeyPress={handleKeyPress}
                   placeholder={isUploading ? "Mengunggah file..." : "Ketik pesan..."}
                   disabled={isUploading}
-                  className="text-gray-800 flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
                 <button
                   onClick={handleSendMessage}

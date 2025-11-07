@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import pusher from '@/lib/pusher-server';
 
 export async function POST(request: NextRequest) {
   try {
